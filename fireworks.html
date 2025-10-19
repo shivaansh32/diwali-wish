@@ -6,76 +6,113 @@
     <title>Happy Diwali! 🎆</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap" rel="stylesheet">
     <style>
-        body {
-            margin: 0;
-            overflow: hidden;
-            background: #000; /* Dark background for canvas */
-            color: #fff;
-            font-family: 'Poppins', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
+    body {
+        margin: 0;
+        overflow: hidden;
+        background: #000; /* Dark background for canvas */
+        color: #fff;
+        font-family: 'Poppins', sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding: 10px; /* Small padding for the edges */
+    }
 
-        /* Canvas MUST be full screen and under the text */
-        #fireworks {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1; /* Below the text layer */
-        }
+    /* Canvas MUST be full screen and under the text */
+    #fireworks {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 1; /* Below the text layer */
+    }
 
-        /* Text Container MUST be centered and on top of the canvas */
+    /* Text Container MUST be centered and on top of the canvas */
+    .text-layer {
+        position: relative;
+        text-align: center;
+        max-width: 800px;
+        padding: 40px;
+        z-index: 10; /* Above the canvas (z-index: 1) */
+        width: 90%; /* Use a percentage width for responsiveness */
+        box-sizing: border-box;
+    }
+
+    .diwali-wish {
+        font-size: 5em; /* Large size for desktop */
+        color: #ffec8b;
+        text-shadow: 0 0 15px #ff5733, 0 0 30px #ff5733;
+        animation: pulse 2s infinite alternate;
+        margin-bottom: 0.5rem;
+        line-height: 1.1;
+    }
+
+    .diwali-subtext {
+        font-size: 1.8em; /* Large size for desktop */
+        color: #ffd700;
+        margin-bottom: 40px;
+    }
+
+    .note-box {
+        background-color: rgba(255, 255, 255, 0.1);
+        border: 2px solid #ffec8b;
+        padding: 25px;
+        border-radius: 10px;
+        margin: 30px auto 0;
+        text-align: left;
+        backdrop-filter: blur(5px);
+        font-size: 1.1rem;
+    }
+
+    .signature {
+        text-align: right;
+        font-style: italic;
+        margin-top: 15px;
+        color: #ff5733;
+        font-weight: bold;
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        100% { transform: scale(1.05); }
+    }
+
+    /* --- RESPONSIVENESS (MOBILE OPTIMIZATION) --- */
+
+    @media (max-width: 600px) {
+        /* Adjust text layer padding for smaller screens */
         .text-layer {
-            position: relative; /* relative to body's flex center */
-            text-align: center;
-            max-width: 800px;
-            padding: 40px;
-            z-index: 10; /* Above the canvas (z-index: 1) */
+            padding: 20px 10px;
         }
 
+        /* Make the main wish smaller */
         .diwali-wish {
-            font-size: 5em;
-            color: #ffec8b; /* Gold/Yellow */
-            text-shadow: 0 0 15px #ff5733, 0 0 30px #ff5733;
-            animation: pulse 2s infinite alternate;
-            margin-bottom: 0.5rem;
+            font-size: 3em; /* Smaller on mobile */
+            margin-bottom: 0.3rem;
         }
 
+        /* Make the subtext smaller */
         .diwali-subtext {
-            font-size: 1.8em;
-            color: #ffd700;
-            margin-bottom: 40px;
+            font-size: 1.2em; /* Smaller on mobile */
+            margin-bottom: 20px;
         }
 
+        /* Make the note box text smaller */
         .note-box {
-            background-color: rgba(255, 255, 255, 0.1);
-            border: 2px solid #ffec8b;
-            padding: 25px;
-            border-radius: 10px;
-            margin: 30px auto 0;
-            text-align: left;
-            backdrop-filter: blur(5px);
-            font-size: 1.1rem;
+            padding: 15px;
+            font-size: 1rem;
         }
+    }
 
-        .signature {
-            text-align: right;
-            font-style: italic;
-            margin-top: 15px;
-            color: #ff5733;
-            font-weight: bold;
+    @media (max-width: 400px) {
+        .diwali-wish {
+            font-size: 2.5em; /* Even smaller for tiny screens */
         }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            100% { transform: scale(1.05); }
-        }
-    </style>
+    }
+</style>
 </head>
 <body>
     <canvas id="fireworks"></canvas>
