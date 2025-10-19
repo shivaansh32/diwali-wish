@@ -1,233 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Happy Diwali ✨</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Poppins', sans-serif;
-    }
-
-    body {
-      background-color: #0b0c10;
-      color: #fff;
-      height: 100vh;
-      overflow: hidden;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      text-align: center;
-    }
-
-    canvas {
-      position: absolute;
-      top: 0;
-      left: 0;
-      z-index: -1;
-    }
-
-    /* 🎁 Gift box container */
-    .box {
-      background: linear-gradient(135deg, #ff8c00, #ff2e63);
-      width: 250px;
-      height: 250px;
-      border-radius: 25px;
-      box-shadow: 0 0 40px rgba(255, 165, 0, 0.6);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      transition: transform 0.2s ease;
-      cursor: pointer;
-    }
-
-    .box:hover {
-      transform: scale(1.05);
-      box-shadow: 0 0 50px rgba(255, 215, 0, 0.8);
-    }
-
-    #openBtn {
-      background: none;
-      border: 2px solid #fff;
-      color: white;
-      font-size: 1.5rem;
-      padding: 15px 40px;
-      border-radius: 30px;
-      cursor: pointer;
-      transition: transform 0.2s ease, box-shadow 0.3s ease;
-    }
-
-    #openBtn:hover {
-      transform: scale(1.05);
-      box-shadow: 0 0 20px #fff;
-    }
-
-    /* Shake animation */
-    @keyframes shake {
-      0% { transform: translate(1px, 1px) rotate(0deg); }
-      10% { transform: translate(-1px, -2px) rotate(-1deg); }
-      20% { transform: translate(-3px, 0px) rotate(1deg); }
-      30% { transform: translate(3px, 2px) rotate(0deg); }
-      40% { transform: translate(1px, -1px) rotate(1deg); }
-      50% { transform: translate(-1px, 2px) rotate(-1deg); }
-      60% { transform: translate(-3px, 1px) rotate(0deg); }
-      70% { transform: translate(3px, 1px) rotate(-1deg); }
-      80% { transform: translate(-1px, -1px) rotate(1deg); }
-      90% { transform: translate(1px, 2px) rotate(0deg); }
-      100% { transform: translate(1px, -2px) rotate(-1deg); }
-    }
-
-    .shake {
-      animation: shake 0.5s;
-      animation-iteration-count: 6; /* 3 seconds total */
-    }
-
-    .message {
-      display: none;
-      animation: fadeIn 2s ease forwards;
-      max-width: 700px;
-      z-index: 2;
-    }
-
-    .message h1 {
-      font-size: 3rem;
-      color: #ffdf00;
-      text-shadow: 0 0 20px #ff8800;
-      margin-bottom: 15px;
-    }
-
-    .note {
-      font-size: 1.3rem;
-      color: #fffacd;
-      line-height: 1.6;
-      opacity: 0.9;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Diwali Gift for You!</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- 🎁 Gift box -->
-  <div class="box" id="giftBox">
-    <button id="openBtn">Open 🎇</button>
-  </div>
 
-  <canvas id="fireworks"></canvas>
+    <div class="container">
+        <h1>Click the box to open your Diwali surprise!</h1>
+        <div id="giftBox" class="gift-box">
+            <div class="box-top"></div>
+            <div class="box-body"></div>
+            <div class="ribbon"></div>
+            <div class="bow-center"></div>
+        </div>
+        <p id="timerDisplay" class="hidden">Opening in: 3...</p>
+    </div>
 
-  <div class="message">
-    <h1>🎆 Happy Diwali! 🎆</h1>
-    <p class="note">
-      May this festival of lights bring endless joy, prosperity, and happiness to you and your loved ones.<br>
-      Let’s celebrate the triumph of light over darkness and good over evil.<br>
-      Wishing you peace, positivity, and success this Diwali! 💫
-    </p>
-  </div>
+    <script>
+        const giftBox = document.getElementById('giftBox');
+        const timerDisplay = document.getElementById('timerDisplay');
+        const explosionClass = 'exploding';
+        let countdown = 3;
+        let isClicked = false;
 
-  <script>
-    const giftBox = document.getElementById('giftBox');
-    const openBtn = document.getElementById('openBtn');
-    const message = document.querySelector('.message');
-    const canvas = document.getElementById('fireworks');
-    const ctx = canvas.getContext('2d');
-    let fireworks = [];
-    let isAnimating = false;
+        giftBox.addEventListener('click', () => {
+            if (isClicked) return; // Prevent multiple clicks
+            isClicked = true;
 
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+            // 1. Start the visual timer
+            timerDisplay.classList.remove('hidden');
+            timerDisplay.textContent = `Opening in: ${countdown}...`;
 
-    class Firework {
-      constructor(x, y, color) {
-        this.x = x;
-        this.y = y;
-        this.color = color;
-        this.particles = [];
-        for (let i = 0; i < 40; i++) {
-          const angle = Math.random() * 2 * Math.PI;
-          const speed = Math.random() * 4 + 1;
-          this.particles.push({
-            x: this.x,
-            y: this.y,
-            vx: Math.cos(angle) * speed,
-            vy: Math.sin(angle) * speed,
-            alpha: 1,
-            radius: Math.random() * 2 + 1
-          });
-        }
-      }
+            // 2. Add a visual shake/animation to the box
+            giftBox.classList.add('shaking');
 
-      update() {
-        this.particles.forEach(p => {
-          p.x += p.vx;
-          p.y += p.vy;
-          p.vy += 0.02;
-          p.alpha -= 0.01;
+            // 3. Set up the countdown interval
+            const timerInterval = setInterval(() => {
+                countdown--;
+                timerDisplay.textContent = `Opening in: ${countdown}...`;
+
+                if (countdown <= 0) {
+                    clearInterval(timerInterval);
+                    
+                    // 4. Explosion effect
+                    giftBox.classList.remove('shaking');
+                    giftBox.classList.add(explosionClass);
+                    timerDisplay.textContent = "BOOM!";
+                    
+                    // 5. Wait a moment for the explosion animation to run, then redirect
+                    setTimeout(() => {
+                        window.location.href = 'fireworks.html';
+                    }, 500); // 0.5 seconds for the explosion animation
+                }
+            }, 1000); // 1000ms = 1 second
         });
-      }
-
-      draw() {
-        this.particles.forEach(p => {
-          ctx.globalAlpha = p.alpha;
-          ctx.fillStyle = this.color;
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-          ctx.fill();
-        });
-      }
-    }
-
-    function animateFireworks() {
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      // Constant random fireworks
-      if (Math.random() < 0.05) {
-        const x = Math.random() * canvas.width;
-        const y = Math.random() * canvas.height / 2;
-        const color = `hsl(${Math.random() * 360}, 100%, 60%)`;
-        fireworks.push(new Firework(x, y, color));
-      }
-
-      fireworks.forEach((f, i) => {
-        f.update();
-        f.draw();
-        if (f.particles[0].alpha <= 0) fireworks.splice(i, 1);
-      });
-
-      if (isAnimating) requestAnimationFrame(animateFireworks);
-    }
-
-    // 🎁 Shake for 3 seconds, then open
-    openBtn.addEventListener('click', () => {
-      giftBox.classList.add('shake');
-      setTimeout(() => {
-        giftBox.style.display = 'none';
-        message.style.display = 'block';
-        isAnimating = true;
-        animateFireworks();
-      }, 3000);
-    });
-
-    // 💥 Fireworks on click/tap
-    window.addEventListener('click', (e) => {
-      if (isAnimating) {
-        const x = e.clientX;
-        const y = e.clientY;
-        const color = `hsl(${Math.random() * 360}, 100%, 60%)`;
-        fireworks.push(new Firework(x, y, color));
-      }
-    });
-
-    window.addEventListener('resize', () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    });
-  </script>
+    </script>
 </body>
 </html>

@@ -1,0 +1,268 @@
+/* --- Global Styles (Unchanged) --- */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    color: #fff;
+    text-align: center;
+    background-color: #0d0d2d; /* Dark blue/purple background */
+}
+
+.container {
+    padding: 20px;
+}
+
+h1 {
+    font-size: 2.5em;
+    margin-bottom: 40px;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+/* --- Gift Box Styles (Unchanged) --- */
+.gift-box {
+    width: 150px;
+    height: 150px;
+    margin: 0 auto;
+    cursor: pointer;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.5s ease;
+}
+
+/* Body of the box (Red) */
+.box-body {
+    width: 100%;
+    height: 100%;
+    background-color: #c70039; /* Deep Red */
+    border-radius: 5px;
+    box-shadow: 0 10px 0 0 #a00030, /* Bottom shadow */
+                0 0 15px rgba(255, 255, 0, 0.7); /* Diwali glow */
+}
+
+/* Top lid of the box */
+.box-top {
+    width: 100%;
+    height: 20px;
+    background-color: #ff5733; /* Orange-Red Lid */
+    position: absolute;
+    top: -15px;
+    left: 0;
+    border-radius: 5px;
+    z-index: 10;
+    box-shadow: 0 5px 0 0 #c70039;
+}
+
+/* Gold Ribbon */
+.ribbon {
+    width: 30px;
+    height: 100%;
+    background: linear-gradient(to right, #ffd700, #ffec8b, #ffd700); /* Gold gradient */
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 5;
+}
+
+/* Center of the bow */
+.bow-center {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: #ffcc00; /* Brighter gold */
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 15;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+/* --- Interactive Effects (Unchanged) --- */
+.hidden {
+    display: none;
+}
+
+#timerDisplay {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-top: 20px;
+    color: #ffec8b; /* Yellow text */
+}
+
+/* Shake Animation */
+.shaking {
+    animation: shake 0.5s infinite alternate;
+}
+
+@keyframes shake {
+    0% { transform: translate(1px, 1px) rotate(0deg); }
+    100% { transform: translate(-1px, -1px) rotate(-1deg); }
+}
+
+/* Explosion Effect */
+.exploding {
+    animation: explode 0.5s forwards;
+}
+
+@keyframes explode {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(3); opacity: 0.5; }
+    100% { transform: scale(0); opacity: 0; }
+}
+
+
+/* --- Fireworks Page Styles (fireworks.html) --- */
+.fireworks-bg {
+    background: radial-gradient(circle, #2d0042 0%, #0d0d2d 100%);
+    overflow: hidden; /* Hide overflow from animations */
+}
+
+.fireworks-container {
+    max-width: 800px;
+    padding: 40px;
+    z-index: 20;
+    position: relative;
+}
+
+.diwali-wish {
+    font-size: 4em;
+    color: #ffec8b; /* Gold/Yellow */
+    text-shadow: 0 0 10px #ff5733, 0 0 20px #ff5733;
+    animation: pulse 2s infinite alternate;
+}
+
+.diwali-subtext {
+    font-size: 1.5em;
+    color: #ffd700;
+    margin-bottom: 30px;
+}
+
+.note-box {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid #ffec8b;
+    padding: 20px;
+    border-radius: 10px;
+    max-width: 500px;
+    margin: 30px auto 0;
+    text-align: left;
+    backdrop-filter: blur(5px);
+}
+
+.signature {
+    text-align: right;
+    font-style: italic;
+    margin-top: 15px;
+    color: #ff5733;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.05); }
+}
+
+/* --- NEW FIREWORKS CSS FOR CONSTANT LOOPING --- */
+
+.firework {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    opacity: 0;
+    animation: firework-loop 4s linear infinite; /* Main animation loop */
+    pointer-events: none; /* Ignore clicks */
+}
+
+/* Firework Animation Keyframes */
+@keyframes firework-loop {
+    0% { 
+        transform: translate(0, 0) scale(0.1); 
+        opacity: 0;
+    }
+    10% {
+        opacity: 1; /* Start appearing */
+    }
+    20% {
+        transform: translate(0, -100px) scale(0.5); /* Ascent */
+    }
+    30% {
+        transform: translate(0, -200px) scale(1); /* Peak before explosion */
+        opacity: 1;
+        box-shadow: 0 0 10px currentColor; /* Small light trail */
+    }
+    40% {
+        /* Explosion effect: large, glowing spread */
+        transform: translate(0, -200px) scale(4); 
+        opacity: 1;
+        box-shadow: 0 0 50px 30px currentColor, 0 0 80px 40px currentColor;
+    }
+    45% {
+        opacity: 0.8;
+    }
+    100% {
+        transform: translate(0, 0) scale(0);
+        opacity: 0; /* Disappear */
+    }
+}
+
+/* Individual Firework Styles (Color and Position) */
+
+/* Large Yellow Firework */
+.large-yellow { 
+    color: #ffec8b; 
+    left: 10%; 
+    bottom: 0; 
+    animation-duration: 5s;
+    transform-origin: 50% 100%;
+}
+
+/* Small Red Firework */
+.small-red {
+    color: #ff5733; 
+    left: 80%; 
+    bottom: 0; 
+    animation-duration: 3s; 
+    animation-delay: 0.5s;
+    transform: scale(0.5);
+}
+
+/* Large Blue Firework */
+.large-blue {
+    color: #33ccff; 
+    left: 45%; 
+    bottom: 0; 
+    animation-duration: 4.5s; 
+    animation-delay: 1.2s;
+}
+
+/* Small Pink Firework */
+.small-pink {
+    color: #ff33cc; 
+    left: 25%; 
+    bottom: 0; 
+    animation-duration: 3.5s; 
+    animation-delay: 2s;
+    transform: scale(0.7);
+}
+
+/* Large Gold Firework */
+.large-gold { 
+    color: #ffd700; 
+    left: 70%; 
+    bottom: 0; 
+    animation-duration: 6s; 
+    animation-delay: 3s;
+}
+
+/* Small Green Firework */
+.small-green {
+    color: #33ff99; 
+    left: 95%; 
+    bottom: 0; 
+    animation-duration: 4s; 
+    animation-delay: 1s;
+    transform: scale(0.6);
+}
