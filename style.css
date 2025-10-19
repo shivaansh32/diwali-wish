@@ -124,7 +124,7 @@ h1 {
 .fireworks-container {
     max-width: 800px;
     padding: 40px;
-    z-index: 20;
+    z-index: 50;
     position: relative;
 }
 

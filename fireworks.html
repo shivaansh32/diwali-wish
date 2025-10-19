@@ -3,28 +3,219 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Happy Diwali!</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Happy Diwali! 🎆</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: #000; /* Dark background for canvas */
+            color: #fff;
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Canvas MUST be full screen and under the text */
+        #fireworks {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1; /* Below the text layer */
+        }
+
+        /* Text Container MUST be centered and on top of the canvas */
+        .text-layer {
+            position: relative; /* relative to body's flex center */
+            text-align: center;
+            max-width: 800px;
+            padding: 40px;
+            z-index: 10; /* Above the canvas (z-index: 1) */
+        }
+
+        .diwali-wish {
+            font-size: 5em;
+            color: #ffec8b; /* Gold/Yellow */
+            text-shadow: 0 0 15px #ff5733, 0 0 30px #ff5733;
+            animation: pulse 2s infinite alternate;
+            margin-bottom: 0.5rem;
+        }
+
+        .diwali-subtext {
+            font-size: 1.8em;
+            color: #ffd700;
+            margin-bottom: 40px;
+        }
+
+        .note-box {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 2px solid #ffec8b;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 30px auto 0;
+            text-align: left;
+            backdrop-filter: blur(5px);
+            font-size: 1.1rem;
+        }
+
+        .signature {
+            text-align: right;
+            font-style: italic;
+            margin-top: 15px;
+            color: #ff5733;
+            font-weight: bold;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.05); }
+        }
+    </style>
 </head>
-<body class="fireworks-bg">
-    
-    <div class="fireworks-container">
+<body>
+    <canvas id="fireworks"></canvas>
+
+    <div class="text-layer">
         <h1 class="diwali-wish">Happy Diwali!</h1>
         <p class="diwali-subtext">May your life be illuminated with joy, prosperity, and endless smiles this festive season.</p>
         
         <div class="note-box">
             <p><strong>A Little Note:</strong></p>
             <p>I hope this surprise brought a smile to your face! Wishing you and your family a truly wonderful festival of lights. Stay safe and enjoy every moment!</p>
-            <p class="signature">— From a Friend</p>
+            <p class="signature">— From your Friend...</p>
         </div>
-        
-        <div class="firework large-yellow"></div>
-        <div class="firework small-red"></div>
-        <div class="firework large-blue delay-1"></div>
-        <div class="firework small-pink delay-2"></div>
-        <div class="firework large-gold delay-3"></div>
-        <div class="firework small-green delay-4"></div>
     </div>
 
+    <script>
+        const canvas = document.getElementById("fireworks");
+        const ctx = canvas.getContext("2d");
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        // Firework and particle logic
+        class Particle {
+          constructor(x, y, color, speed, angle, fade) {
+            this.x = x;
+            this.y = y;
+            this.color = color;
+            this.speed = speed;
+            this.angle = angle;
+            this.fade = fade;
+            this.alpha = 1;
+            this.gravity = 0.03;
+          }
+
+          update() {
+            this.speed *= 0.98;
+            this.x += Math.cos(this.angle) * this.speed;
+            this.y += Math.sin(this.angle) * this.speed + this.gravity;
+            this.alpha -= this.fade;
+          }
+
+          draw() {
+            ctx.globalAlpha = this.alpha;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
+            ctx.fillStyle = this.color;
+            ctx.fill();
+            ctx.globalAlpha = 1; // Reset alpha
+          }
+        }
+
+        class Firework {
+          constructor(x, y) {
+            this.x = x;
+            this.y = canvas.height;
+            this.targetY = y;
+            this.trail = [];
+            this.exploded = false;
+            this.color = `hsl(${Math.random() * 360}, 100%, 60%)`;
+            this.speed = 7;
+            this.particles = [];
+          }
+
+          update() {
+            if (!this.exploded) {
+              this.trail.push({ x: this.x, y: this.y });
+              if (this.trail.length > 10) this.trail.shift();
+
+              this.y -= this.speed;
+              if (this.y <= this.targetY) {
+                this.exploded = true;
+                this.explode();
+              }
+            } else {
+              this.particles.forEach(p => p.update());
+              this.particles = this.particles.filter(p => p.alpha > 0);
+            }
+          }
+
+          draw() {
+            if (!this.exploded) {
+              // Draw the firework trail
+              ctx.beginPath();
+              ctx.moveTo(this.trail[0]?.x || this.x, this.trail[0]?.y || this.y);
+              this.trail.forEach(p => ctx.lineTo(p.x, p.y));
+              ctx.strokeStyle = this.color;
+              ctx.lineWidth = 2;
+              ctx.stroke();
+            }
+            // Draw the particles
+            this.particles.forEach(p => p.draw());
+          }
+
+          explode() {
+            for (let i = 0; i < 80; i++) {
+              const angle = (Math.PI * 2 * i) / 80;
+              const speed = Math.random() * 5 + 2;
+              const fade = Math.random() * 0.015 + 0.007;
+              this.particles.push(new Particle(this.x, this.y, this.color, speed, angle, fade));
+            }
+          }
+        }
+
+        let fireworks = [];
+
+        function animate() {
+          // Add a dark overlay to fade trails
+          ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+          // Randomly launch a new firework
+          if (Math.random() < 0.04) {
+            const x = Math.random() * canvas.width;
+            const y = Math.random() * canvas.height * 0.5;
+            fireworks.push(new Firework(x, y));
+          }
+
+          // Update and draw existing fireworks
+          fireworks.forEach((fw, i) => {
+            fw.update();
+            fw.draw();
+            // Remove finished fireworks
+            if (fw.exploded && fw.particles.length === 0) fireworks.splice(i, 1);
+          });
+
+          requestAnimationFrame(animate);
+        }
+
+        animate();
+
+        // Optional: trigger new firework on click
+        window.addEventListener("click", e => {
+          fireworks.push(new Firework(e.clientX, e.clientY));
+        });
+
+        window.addEventListener("resize", () => {
+          canvas.width = window.innerWidth;
+          canvas.height = window.innerHeight;
+        });
+    </script>
 </body>
 </html>
